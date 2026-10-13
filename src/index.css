@@ -1,0 +1,2134 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Outfit:wght@100..900&display=swap');
+
+@import "tailwindcss";
+
+
+/* ======================================================
+   GRAND LINE — QUICKCHAT DESIGN SYSTEM
+   ====================================================== */
+
+:root {
+  /* Ocean Darks */
+  --ocean-darkest: #06111F;
+  --ocean-dark: #081727;
+  --ocean-mid: #0B1D30;
+  --ocean-light: #10263A;
+
+  /* Deep Blues */
+  --deep-1: #12344D;
+  --deep-2: #164866;
+  --deep-3: #1B5B7A;
+
+  /* Gold */
+  --gold-dim: #D4A72C;
+  --gold-mid: #E5B93F;
+  --gold-bright: #F2D477;
+  --gold-glow: rgba(228,185,63,0.35);
+
+  /* Parchment */
+  --parch-dark: #C9AA72;
+  --parch-mid: #D6BD86;
+  --parch-light: #E4D19E;
+  --parch-bright: #F0DFB5;
+
+  /* Wood */
+  --wood-dark: #392317;
+  --wood-mid: #4A2B19;
+  --wood-light: #5A351E;
+
+  /* Pirate Red */
+  --red-dark: #8C1821;
+  --red-mid: #A91F29;
+  --red-main: #C72B32;
+  --red-bright: #D9363E;
+
+  /* Text */
+  --text-primary: #FFF7E6;
+  --text-muted: #A9A79F;
+  --text-dark: #2C1810;
+
+  /* Status */
+  --online: #20C997;
+  --call: #00C98B;
+  --error: #D64545;
+
+  /* Incoming parchment */
+  --msg-in-bg: #E8D5A3;
+  --msg-in-border: #C9AA72;
+
+  /* Outgoing parchment */
+  --msg-out-bg: #C9907A;
+  --msg-out-border: #A91F29;
+
+  /* UI */
+  --sidebar-bg: rgba(8, 23, 39, 0.92);
+  --sidebar-border: rgba(212, 167, 44, 0.3);
+  --input-bg: rgba(6, 17, 31, 0.85);
+  --card-bg: rgba(11, 29, 48, 0.88);
+  --overlay: rgba(6, 17, 31, 0.75);
+}
+
+/* ======================================================
+   GLOBAL RESET & BASE
+   ====================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background-color: var(--ocean-darkest);
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(6, 17, 30, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 167, 44, 0.35);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 167, 44, 0.65);
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ======================================================
+   TYPOGRAPHY
+   ====================================================== */
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-crimson {
+  font-family: 'Crimson Text', serif;
+}
+
+/* ======================================================
+   HOMEPAGE — FULL VIEWPORT LAYOUT
+   ====================================================== */
+
+.gl-home {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.gl-home-bg {
+  position: absolute;
+  inset: 0;
+  background-color: var(--ocean-darkest);
+  z-index: 0;
+}
+
+.gl-home-bg-overlay {
+  display: none;
+}
+
+.gl-home-layout {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  padding: 0;
+  gap: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ======================================================
+   KEYFRAMES
+   ====================================================== */
+
+@keyframes moonPulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+
+@keyframes cloudDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes waveMove1 {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes waveMove2 {
+  0% { transform: translateX(-10%); }
+  100% { transform: translateX(-60%); }
+}
+
+@keyframes waveMove3 {
+  0% { transform: translateX(-5%); }
+  100% { transform: translateX(-55%); }
+}
+
+@keyframes shipBob {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  33% { transform: translateY(-6px) rotate(1deg); }
+  66% { transform: translateY(-3px) rotate(-0.5deg); }
+}
+
+@keyframes starTwinkle {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+@keyframes compassSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes compassSlowSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes avatarFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes onlinePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(32,201,151,0.6); }
+  50% { box-shadow: 0 0 0 4px rgba(32,201,151,0); }
+}
+
+@keyframes parchmentIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) rotate(-1deg) scale(0.95);
+  }
+  60% {
+    transform: translateY(-2px) rotate(0.3deg) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes lanternFlicker {
+  0%, 100% { opacity: 0.9; filter: brightness(1); }
+  25% { opacity: 0.75; filter: brightness(0.85); }
+  50% { opacity: 0.95; filter: brightness(1.05); }
+  75% { opacity: 0.8; filter: brightness(0.9); }
+}
+
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes goldShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes waterRipple {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes loadingSail {
+  0% { transform: translateX(-120px); }
+  100% { transform: translateX(calc(100vw + 120px)); }
+}
+
+@keyframes navMarker {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-8px) translateX(4px); }
+  50% { transform: translateY(-4px) translateX(-2px); }
+  75% { transform: translateY(-10px) translateX(6px); }
+}
+
+/* ======================================================
+   PARCHMENT CARD (LOGIN FORM)
+   ====================================================== */
+
+.parchment-card {
+  background:
+    linear-gradient(135deg, #E8D5A3 0%, #DFC68E 30%, #D4B87A 60%, #C9AA72 100%);
+  border: 2px solid var(--gold-dim);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px rgba(212,167,44,0.4),
+    0 8px 32px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.3),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.parchment-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  opacity: 0.6;
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+/* Burned edges effect */
+.parchment-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 40% at 0% 0%, rgba(58,35,23,0.35) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 40% at 100% 0%, rgba(58,35,23,0.35) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 40% at 0% 100%, rgba(58,35,23,0.45) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 40% at 100% 100%, rgba(58,35,23,0.45) 0%, transparent 50%);
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+/* Map lines on parchment */
+.parchment-map-lines {
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(58,35,23,0.8) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(58,35,23,0.8) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* ======================================================
+   PARCHMENT MESSAGE BUBBLES
+   ====================================================== */
+
+.msg-bubble {
+  position: relative;
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px 14px;
+  min-width: 105px;
+  max-width: 100%;
+  padding: 10px 16px 8px 16px;
+  border-radius: 8px;
+  line-height: 1.45;
+  font-size: 0.95rem;
+  font-family: 'Outfit', sans-serif;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.55);
+  animation: parchmentIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.msg-text-content {
+  flex: 1 1 auto;
+  min-width: fit-content;
+  word-break: break-word;
+  white-space: pre-wrap;
+  color: inherit;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ── Incoming Papyrus Parchment Paper UI (as in Screenshot) ── */
+.msg-incoming {
+  background: linear-gradient(180deg, #F8EEDB 0%, #EED9B3 45%, #E2C799 100%);
+  border: 1.5px solid #8C5A24;
+  color: #241508;
+  box-shadow: inset 0 0 12px rgba(110, 65, 20, 0.22), 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Outgoing Crimson Pirate Paper UI (as in Screenshot) ── */
+.msg-outgoing {
+  background: linear-gradient(180deg, #9C1A24 0%, #87131B 50%, #6A0C13 100%);
+  border: 1.5px solid #D4A72C;
+  color: #FFF7E6;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.55);
+}
+
+/* ── 4 Curled Corner Tabs on Paper Scroll ── */
+.msg-corner-tab {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.msg-incoming .msg-corner-tab {
+  border-color: #7A4B1A;
+}
+
+.msg-outgoing .msg-corner-tab {
+  border-color: #F2D477;
+}
+
+.msg-corner-tab.tl {
+  top: -3px;
+  left: -3px;
+  border-top: 2.5px solid;
+  border-left: 2.5px solid;
+  border-radius: 3px 0 0 0;
+}
+
+.msg-corner-tab.tr {
+  top: -3px;
+  right: -3px;
+  border-top: 2.5px solid;
+  border-right: 2.5px solid;
+  border-radius: 0 3px 0 0;
+}
+
+.msg-corner-tab.bl {
+  bottom: -3px;
+  left: -3px;
+  border-bottom: 2.5px solid;
+  border-left: 2.5px solid;
+  border-radius: 0 0 0 3px;
+}
+
+.msg-corner-tab.br {
+  bottom: -3px;
+  right: -3px;
+  border-bottom: 2.5px solid;
+  border-right: 2.5px solid;
+  border-radius: 0 0 3px 0;
+}
+
+.msg-meta-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  margin-left: auto;
+  align-self: flex-end;
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+  padding-bottom: 1px;
+}
+
+.msg-incoming .msg-meta-row {
+  color: #6B4D2B;
+  opacity: 0.95;
+}
+
+.msg-outgoing .msg-meta-row {
+  color: #E6C57A;
+  opacity: 0.95;
+}
+
+/* ── Ticks / Delivery Indicators ── */
+.msg-checks-label {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  margin-left: 2px;
+}
+
+/* Seen: Cyan Blue Double Tick (as in Screenshot) */
+.msg-checks-label.seen {
+  color: #38BDF8 !important;
+  text-shadow: 0 0 4px rgba(56, 189, 248, 0.45);
+}
+
+/* Delivered: Muted Double Tick */
+.msg-checks-label.delivered {
+  color: #E2D3B3;
+  opacity: 0.9;
+}
+
+/* Sent / Recipient Offline: Single Tick */
+.msg-checks-label.sent {
+  color: #D6BD86;
+  opacity: 0.8;
+  letter-spacing: normal;
+  font-size: 0.76rem;
+}
+
+/* ======================================================
+   INTERACTIVE ADJUSTMENT LINE (RESIZER)
+   ====================================================== */
+
+.gl-adjust-line {
+  width: 10px;
+  cursor: col-resize;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: none;
+  background: transparent;
+  flex-shrink: 0;
+  z-index: 20;
+  transition: all 0.2s ease;
+}
+
+.gl-adjust-line::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  background: rgba(212, 167, 44, 0.4);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.gl-adjust-line:hover::before,
+.gl-adjust-line.active::before {
+  background: #F2D477;
+  width: 3px;
+  box-shadow: 0 0 10px rgba(242, 212, 119, 0.85), 0 0 20px rgba(212, 167, 44, 0.5);
+}
+
+.gl-adjust-handle {
+  width: 4px;
+  height: 38px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #F2D477 0%, #D4A72C 50%, #9E7412 100%);
+  border: 1px solid #5B3F0E;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  opacity: 0.8;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.gl-adjust-line:hover .gl-adjust-handle,
+.gl-adjust-line.active .gl-adjust-handle {
+  opacity: 1;
+  height: 56px;
+  box-shadow: 0 0 10px #F2D477, 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+.gl-sidebar-wrapper {
+  padding-right: 4px;
+  height: 100%;
+}
+
+.gl-chat-wrapper {
+  padding: 0 4px;
+  height: 100%;
+  max-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.gl-right-wrapper {
+  padding-left: 4px;
+  height: 100%;
+}
+
+/* ======================================================
+   SIDEBAR
+   ====================================================== */
+
+.gl-sidebar {
+  background: rgba(7, 18, 30, 0.92);
+  backdrop-filter: blur(12px);
+  border: 2px solid #D4A72C;
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px #8C6A1A, 0 8px 32px rgba(0,0,0,0.8);
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.gl-sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Subtle lantern glow inside sidebar */
+.gl-sidebar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: radial-gradient(ellipse 80% 100% at 50% 0%, rgba(212,167,44,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ======================================================
+   BRAND LOGO
+   ====================================================== */
+
+.gl-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.gl-brand-title {
+  font-family: 'Cinzel', serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-mid) 50%, var(--gold-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.08em;
+  text-shadow: none;
+  margin: 0;
+}
+
+.gl-brand-sub {
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
+  font-size: 0.55rem;
+  letter-spacing: 0.35em;
+  color: var(--gold-dim);
+  opacity: 0.85;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ======================================================
+   SEARCH BAR
+   ====================================================== */
+
+.gl-search {
+  background: rgba(6,17,31,0.7);
+  border: 1px solid rgba(212,167,44,0.3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  transition: border-color 0.2s;
+}
+
+.gl-search:focus-within {
+  border-color: rgba(212,167,44,0.6);
+  box-shadow: 0 0 0 2px rgba(212,167,44,0.1);
+}
+
+.gl-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-family: 'Outfit', sans-serif;
+  flex: 1;
+}
+
+.gl-search input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ======================================================
+   CREATE CREW BUTTON
+   ====================================================== */
+
+.gl-create-crew {
+  background: linear-gradient(135deg, #8C1821 0%, #A91F29 100%);
+  border: 1.5px solid #D4A72C;
+  color: #FFF7E6;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(140,24,33,0.5);
+  width: 100%;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.gl-create-crew:hover {
+  background: linear-gradient(135deg, #A91F29 0%, #C72B32 100%);
+  border-color: #F2D477;
+  box-shadow: 0 6px 18px rgba(140,24,33,0.7), 0 0 10px rgba(212,167,44,0.3);
+  transform: translateY(-1px);
+}
+
+/* ======================================================
+   CONVERSATION CARDS
+   ====================================================== */
+
+.gl-conv-card {
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+  background: rgba(8, 22, 36, 0.75);
+  border: 1px solid rgba(212, 167, 44, 0.35);
+  position: relative;
+  margin-bottom: 6px;
+}
+
+.gl-conv-card:hover {
+  background: rgba(14, 34, 54, 0.85);
+  border-color: rgba(212, 167, 44, 0.6);
+  transform: translateY(-1px);
+}
+
+.gl-conv-card.active {
+  background: linear-gradient(135deg, #7A121A 0%, #961B24 100%);
+  border: 1.5px solid #D4A72C;
+  box-shadow: 0 4px 14px rgba(140, 24, 33, 0.5), inset 0 0 0 1px rgba(212,167,44,0.3);
+}
+
+/* ======================================================
+   AVATAR
+   ====================================================== */
+
+.gl-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(212,167,44,0.4);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.gl-avatar-sm {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(212,167,44,0.35);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.gl-avatar-lg {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 3px solid rgba(212,167,44,0.5);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.online-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--online);
+  border-radius: 50%;
+  border: 2px solid var(--ocean-darkest);
+  animation: onlinePulse 2.5s ease-in-out infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.online-dot-sm {
+  width: 8px;
+  height: 8px;
+  background: var(--online);
+  border-radius: 50%;
+  border: 1.5px solid var(--ocean-darkest);
+  animation: onlinePulse 2.5s ease-in-out infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ======================================================
+   CHAT CONTAINER
+   ====================================================== */
+
+.gl-chat-area {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  max-height: 100%;
+}
+
+.gl-chat-area.has-theme::before {
+  display: none !important;
+}
+
+/* Compass watermark in chat area */
+.gl-chat-area::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 450px;
+  height: 450px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='90' fill='none' stroke='%23D4A72C' stroke-width='1' opacity='0.08'/%3E%3Ccircle cx='100' cy='100' r='70' fill='none' stroke='%23D4A72C' stroke-width='0.5' opacity='0.06'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23D4A72C' stroke-width='0.5' opacity='0.05'/%3E%3Cline x1='100' y1='10' x2='100' y2='190' stroke='%23D4A72C' stroke-width='0.5' opacity='0.05'/%3E%3Cline x1='10' y1='100' x2='190' y2='100' stroke='%23D4A72C' stroke-width='0.5' opacity='0.05'/%3E%3Cline x1='30' y1='30' x2='170' y2='170' stroke='%23D4A72C' stroke-width='0.5' opacity='0.04'/%3E%3Cline x1='170' y1='30' x2='30' y2='170' stroke='%23D4A72C' stroke-width='0.5' opacity='0.04'/%3E%3Cpolygon points='100,10 108,90 100,100 92,90' fill='%23D4A72C' opacity='0.07'/%3E%3Cpolygon points='100,190 108,110 100,100 92,110' fill='%23D4A72C' opacity='0.05'/%3E%3Cpolygon points='10,100 90,92 100,100 90,108' fill='%23D4A72C' opacity='0.06'/%3E%3Cpolygon points='190,100 110,92 100,100 110,108' fill='%23D4A72C' opacity='0.05'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.3;
+  pointer-events: none;
+  animation: compassSlowSpin 120s linear infinite;
+  z-index: 0;
+}
+
+/* ======================================================
+   CHAT HEADER
+   ====================================================== */
+
+.gl-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border: 1.5px solid #D4A72C;
+  border-radius: 12px;
+  background: rgba(6, 18, 32, 0.88);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  margin: 6px 8px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+/* ======================================================
+   GRAND LINE CONTACT PLAQUE (CLEAN & RESILIENT)
+   ====================================================== */
+
+.gl-contact-plaque {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 14px 4px 6px;
+  background: linear-gradient(135deg, rgba(14, 38, 66, 0.8) 0%, rgba(6, 20, 36, 0.94) 100%);
+  border: 1.5px solid #D4A72C;
+  border-radius: 28px;
+  box-shadow:
+    inset 0 1px 3px rgba(255, 235, 160, 0.35),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.6),
+    0 2px 10px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.gl-contact-avatar-slot {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.gl-contact-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #D4A72C;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 8px rgba(212, 167, 44, 0.3);
+  display: block;
+}
+
+.gl-contact-avatar-group {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #D4A72C;
+  background: radial-gradient(circle, #7D1822 0%, #3B0A10 70%, #150306 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 8px rgba(212, 167, 44, 0.3);
+}
+
+.gl-bottle-online-dot {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 9px;
+  height: 9px;
+  background: var(--online);
+  border-radius: 50%;
+  border: 2px solid #06111F;
+  animation: onlinePulse 2.5s ease-in-out infinite;
+}
+
+.gl-contact-text-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.gl-contact-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #FFF7E6;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.gl-bottle-crew-badge {
+  font-size: 0.58rem;
+  background: rgba(212, 167, 44, 0.25);
+  color: #F2D477;
+  border: 1px solid rgba(212, 167, 44, 0.5);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.gl-contact-sub {
+  margin-top: 1px;
+  font-size: 0.72rem;
+  color: #D6BD86;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ======================================================
+   PIRATE SHIP CONTROL-PANEL CHAT HEADER BUTTONS
+   ====================================================== */
+
+.gl-helm-control-cluster {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.gl-helm-btn-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gl-helm-control-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  position: relative;
+  outline: none;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.22s ease;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.7));
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gl-helm-control-btn .gl-helm-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.gl-helm-control-btn:hover {
+  transform: scale(1.08);
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 12px rgba(245, 211, 123, 0.55));
+}
+
+.gl-helm-control-btn:active {
+  transform: scale(0.95);
+}
+
+.gl-helm-control-btn:focus-visible {
+  filter: drop-shadow(0 0 10px rgba(245, 211, 123, 0.85));
+}
+
+/* Floating Tooltip BELOW the icon - fully visible, no clipping, no layout shift */
+.gl-helm-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translate(-50%, -4px);
+  background: rgba(5, 16, 30, 0.96);
+  border: 1px solid rgba(212, 167, 44, 0.85);
+  border-radius: 6px;
+  padding: 4px 9px;
+  color: #F7E4A8;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.18s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.85), 0 0 10px rgba(212, 167, 44, 0.3);
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  user-select: none;
+}
+
+/* Tooltip Upward Caret Arrow pointing to button */
+.gl-helm-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 4.5px 4.5px 4.5px;
+  border-style: solid;
+  border-color: transparent transparent rgba(212, 167, 44, 0.85) transparent;
+}
+
+/* Rightmost button alignment to prevent right-edge clipping on narrow widths */
+.gl-helm-btn-wrapper:last-child .gl-helm-tooltip {
+  left: auto;
+  right: -2px;
+  transform: translateY(-4px);
+}
+
+.gl-helm-btn-wrapper:last-child .gl-helm-tooltip::after {
+  left: auto;
+  right: 18px;
+  transform: none;
+}
+
+/* Hover & Focus State */
+.gl-helm-btn-wrapper:hover .gl-helm-tooltip,
+.gl-helm-control-btn:focus-visible ~ .gl-helm-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  animation: glTooltipFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.gl-helm-btn-wrapper:last-child:hover .gl-helm-tooltip,
+.gl-helm-btn-wrapper:last-child .gl-helm-control-btn:focus-visible ~ .gl-helm-tooltip {
+  transform: translateY(0);
+  animation: glTooltipFadeInRight 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes glTooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes glTooltipFadeInRight {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .gl-helm-control-btn {
+    width: 38px;
+    height: 38px;
+  }
+  .gl-helm-control-cluster {
+    gap: 6px;
+  }
+}
+
+/* ======================================================
+   MESSAGE COMPOSER
+   ====================================================== */
+
+.gl-composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border: 2px solid #9C7424;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #F0DFB5 0%, #E6D29D 50%, #D8BE7D 100%);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  margin-top: 6px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.gl-composer-upload-btn {
+  background: rgba(10, 20, 32, 0.85);
+  border: 1.5px solid #D4A72C;
+  border-radius: 6px;
+  padding: 5px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.gl-composer-upload-btn:hover {
+  background: rgba(140, 24, 33, 0.85);
+  transform: scale(1.05);
+}
+
+.gl-composer-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #2C1810;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.92rem;
+  font-style: italic;
+  padding: 4px 6px;
+}
+
+.gl-composer-input::placeholder {
+  color: rgba(44, 24, 16, 0.6);
+}
+
+.gl-composer-mic-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.gl-composer-mic-btn:hover {
+  transform: scale(1.15);
+}
+
+.gl-send-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8C1821, #C72B32);
+  border: 1.5px solid #D4A72C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(140,24,33,0.5);
+}
+
+.gl-send-btn:hover {
+  background: linear-gradient(135deg, #A91F29, #D9363E);
+  transform: scale(1.08) rotate(5deg);
+  box-shadow: 0 4px 14px rgba(140,24,33,0.7);
+}
+
+.gl-send-btn:active {
+  transform: scale(0.95) rotate(0deg);
+}
+
+/* ======================================================
+   RIGHT SIDEBAR / CONTACT INFO (AGED PARCHMENT SCROLL)
+   ====================================================== */
+
+.gl-right-panel {
+  background: linear-gradient(135deg, #EAD5A0 0%, #DFC58F 50%, #D2B57B 100%);
+  border: 2px solid #8C6A1A;
+  outline: 1px solid #D4A72C;
+  border-radius: 14px;
+  box-shadow: 0 0 0 2px #5B3F0E, 0 8px 32px rgba(0,0,0,0.8);
+  position: relative;
+  overflow-y: auto;
+  padding: 12px 14px;
+}
+
+/* ======================================================
+   BUTTONS
+   ====================================================== */
+
+.gl-btn-green {
+  background: linear-gradient(135deg, #0D8A58, #10B981);
+  border: 1px solid #14D092;
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 7px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(13, 138, 88, 0.4);
+}
+
+.gl-btn-green:hover {
+  background: linear-gradient(135deg, #109B63, #1BE8A3);
+  transform: translateY(-1px);
+}
+
+.gl-btn-logout {
+  background: linear-gradient(135deg, #8C1821 0%, #B7242E 100%);
+  border: 1.5px solid #D4A72C;
+  color: #FFF7E6;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(140, 24, 33, 0.4);
+}
+
+.gl-btn-logout:hover {
+  background: linear-gradient(135deg, #A91F29 0%, #D42B36 100%);
+  box-shadow: 0 6px 16px rgba(140, 24, 33, 0.6);
+  transform: translateY(-1px);
+}
+
+/* ======================================================
+   COMPASS SPINNER
+   ====================================================== */
+
+.compass-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.7;
+  animation: compassSpin 20s linear infinite;
+  flex-shrink: 0;
+}
+
+.compass-icon-sm {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+  animation: compassSpin 15s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ======================================================
+   WELCOME / EMPTY STATE
+   ====================================================== */
+
+.gl-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 20px;
+  text-align: center;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.gl-welcome::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  height: 350px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='90' fill='none' stroke='%23D4A72C' stroke-width='0.8' opacity='0.12'/%3E%3Ccircle cx='100' cy='100' r='70' fill='none' stroke='%23D4A72C' stroke-width='0.5' opacity='0.1'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23D4A72C' stroke-width='0.5' opacity='0.08'/%3E%3Cline x1='100' y1='5' x2='100' y2='195' stroke='%23D4A72C' stroke-width='0.5' opacity='0.1'/%3E%3Cline x1='5' y1='100' x2='195' y2='100' stroke='%23D4A72C' stroke-width='0.5' opacity='0.1'/%3E%3Cpolygon points='100,5 104,95 100,100 96,95' fill='%23D4A72C' opacity='0.15'/%3E%3Cpolygon points='100,195 104,105 100,100 96,105' fill='%23D4A72C' opacity='0.1'/%3E%3Cpolygon points='5,100 95,96 100,100 95,104' fill='%23D4A72C' opacity='0.12'/%3E%3Cpolygon points='195,100 105,96 100,100 105,104' fill='%23D4A72C' opacity='0.1'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+  pointer-events: none;
+  animation: compassSlowSpin 90s linear infinite;
+}
+
+.gl-welcome-badge {
+  background: linear-gradient(135deg, #C9AA72, #E4D19E);
+  border: 1.5px solid var(--gold-dim);
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 0.7rem;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  color: #2C1810;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* ======================================================
+   UNSEEN BADGE
+   ====================================================== */
+
+.unseen-badge {
+  background: linear-gradient(135deg, var(--red-dark), var(--red-main));
+  border: 1px solid var(--gold-dim);
+  color: var(--text-primary);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ======================================================
+   PROFILE MENU DROPDOWN
+   ====================================================== */
+
+.gl-dropdown {
+  background: linear-gradient(135deg, rgba(11,29,48,0.98) 0%, rgba(8,23,39,0.99) 100%);
+  border: 1px solid rgba(212,167,44,0.35);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,167,44,0.1);
+  overflow: hidden;
+  animation: fadeSlideUp 0.2s ease;
+}
+
+.gl-dropdown-item {
+  padding: 10px 16px;
+  font-size: 0.8rem;
+  color: var(--parch-light);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gl-dropdown-item:hover {
+  background: rgba(212,167,44,0.12);
+  color: var(--gold-bright);
+}
+
+.gl-dropdown-item.danger {
+  color: var(--red-bright);
+}
+
+.gl-dropdown-item.danger:hover {
+  background: rgba(199,43,50,0.15);
+}
+
+/* ======================================================
+   GOLD DIVIDER
+   ====================================================== */
+
+.gl-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,167,44,0.4), transparent);
+  margin: 8px 0;
+}
+
+/* ======================================================
+   SECTION HEADING
+   ====================================================== */
+
+.gl-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  opacity: 0.9;
+}
+
+/* ======================================================
+   PROFILE PAGE
+   ====================================================== */
+
+.gl-profile-card {
+  background: linear-gradient(135deg, rgba(11,29,48,0.95) 0%, rgba(8,23,39,0.98) 100%);
+  border: 1.5px solid rgba(212,167,44,0.35);
+  border-radius: 16px;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(212,167,44,0.1);
+}
+
+.gl-input {
+  background: rgba(6,17,31,0.8);
+  border: 1px solid rgba(212,167,44,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+.gl-input::placeholder {
+  color: var(--text-muted);
+}
+
+.gl-input:focus {
+  border-color: rgba(212,167,44,0.6);
+  box-shadow: 0 0 0 2px rgba(212,167,44,0.12);
+}
+
+/* ======================================================
+   PARCHMENT FORM INPUT (LOGIN)
+   ====================================================== */
+
+.parchment-input {
+  background: rgba(6,17,31,0.75);
+  border: 1.5px solid rgba(212,167,44,0.5);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.parchment-input::placeholder {
+  color: rgba(169,167,159,0.7);
+}
+
+.parchment-input:focus {
+  border-color: var(--gold-mid);
+  box-shadow: 0 0 0 2px rgba(228,185,63,0.15);
+}
+
+/* ======================================================
+   MEDIA GALLERY
+   ====================================================== */
+
+.gl-media-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.gl-media-item {
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(212,167,44,0.25);
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+  aspect-ratio: 1;
+}
+
+.gl-media-item:hover {
+  transform: scale(1.03);
+  border-color: rgba(212,167,44,0.5);
+}
+
+.gl-media-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ======================================================
+   ICON BUTTONS
+   ====================================================== */
+
+.gl-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(18,52,77,0.5);
+  border: 1px solid rgba(212,167,44,0.25);
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--gold-bright);
+  flex-shrink: 0;
+}
+
+.gl-icon-btn:hover {
+  background: rgba(18,52,77,0.8);
+  border-color: rgba(212,167,44,0.5);
+  box-shadow: 0 2px 8px rgba(212,167,44,0.2);
+  transform: scale(1.05);
+}
+
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+
+@media (max-width: 768px) {
+  .parchment-card {
+    margin: 16px;
+  }
+}
+
+/* ======================================================
+   REDUCED MOTION SUPPORT
+   ====================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ======================================================
+   TOAST OVERRIDE
+   ====================================================== */
+
+.react-hot-toast > div {
+  background: var(--ocean-mid) !important;
+  border: 1px solid rgba(212,167,44,0.3) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ======================================================
+   UTILITY
+   ====================================================== */
+
+.gl-text-gold {
+  color: var(--gold-bright);
+}
+
+.gl-text-muted {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.gl-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(212,167,44,0.2), transparent);
+  background-size: 200% 100%;
+  animation: goldShimmer 2.5s linear infinite;
+}
+
+.gl-fade-in {
+  animation: fadeSlideUp 0.4s ease forwards;
+}
+
+/* ======================================================
+   MOBILE RESPONSIVE OVERRIDES
+   ====================================================== */
+
+/* Mobile: hide sidebar when chat is open */
+@media (max-width: 767px) {
+  .max-md\:hidden {
+    display: none !important;
+  }
+
+  /* Show back button on mobile */
+  #chat-back-btn {
+    display: flex !important;
+  }
+
+  /* Full width chat on mobile */
+  .gl-chat-area {
+    width: 100%;
+  }
+
+  /* Stack layout on mobile */
+  .gl-home-layout {
+    flex-direction: column !important;
+    padding: 0 !important;
+  }
+
+  .gl-adjust-line {
+    display: none !important;
+  }
+
+  /* Stack layout */
+  .gl-sidebar {
+    border-right: none;
+    border-bottom: 1px solid rgba(212,167,44,0.2);
+  }
+
+  .gl-right-panel {
+    border-left: none;
+    border-top: 1px solid rgba(212,167,44,0.2);
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1024px) {
+  #chat-back-btn {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  #chat-back-btn {
+    display: none !important;
+  }
+}
+
+/* ======================================================
+   FONT UTILITY HELPERS
+   ====================================================== */
+
+.font-cinzel {
+  font-family: 'Cinzel', serif !important;
+}
+
+.font-crimson {
+  font-family: 'Crimson Text', serif !important;
+}
+
+/* ======================================================
+   CREATE CREW MODAL
+   ====================================================== */
+
+.gl-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 10, 18, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.gl-modal-card {
+  width: 100%;
+  max-width: 540px;
+  background: linear-gradient(145deg, rgba(10, 24, 40, 0.98) 0%, rgba(6, 17, 30, 0.98) 100%);
+  border: 2px solid #D4A72C;
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px #8C6A1A, 0 24px 64px rgba(0, 0, 0, 0.95);
+  position: relative;
+  overflow: hidden;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  animation: scaleUp 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #FFF7E6;
+}
+
+.gl-modal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #F2D477, transparent);
+  pointer-events: none;
+}
+
+.gl-modal-header {
+  padding: 16px 20px 14px;
+  border-bottom: 1.5px solid rgba(212, 167, 44, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.gl-modal-title {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #F2D477;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gl-modal-close {
+  background: transparent;
+  border: none;
+  color: #A9A79F;
+  font-size: 1.3rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.gl-modal-close:hover {
+  color: #F2D477;
+  background: rgba(212, 167, 44, 0.1);
+}
+
+.gl-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 75vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.gl-modal-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #D4A72C;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.gl-modal-input {
+  width: 100%;
+  background: rgba(6, 17, 31, 0.85);
+  border: 1.5px solid rgba(212, 167, 44, 0.4);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #FFF7E6;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.gl-modal-input:focus {
+  border-color: #F2D477;
+  box-shadow: 0 0 0 2px rgba(212, 167, 44, 0.2);
+}
+
+.gl-emblem-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gl-emblem-btn {
+  background: rgba(8, 22, 36, 0.7);
+  border: 1.5px solid rgba(212, 167, 44, 0.3);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gl-emblem-btn:hover,
+.gl-emblem-btn.active {
+  border-color: #F2D477;
+  background: rgba(140, 24, 33, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.gl-crewmate-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(8, 22, 36, 0.6);
+  border: 1.5px solid rgba(212, 167, 44, 0.25);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gl-crewmate-card:hover {
+  border-color: rgba(212, 167, 44, 0.6);
+  background: rgba(8, 22, 36, 0.85);
+}
+
+.gl-crewmate-card.selected {
+  border-color: #F2D477;
+  background: linear-gradient(135deg, rgba(140, 24, 33, 0.5) 0%, rgba(8, 22, 36, 0.9) 100%);
+  box-shadow: 0 0 10px rgba(212, 167, 44, 0.3);
+}
+
+.gl-modal-footer {
+  padding: 14px 20px 18px;
+  border-top: 1.5px solid rgba(212, 167, 44, 0.25);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.gl-modal-cancel-btn {
+  background: transparent;
+  border: 1.5px solid rgba(212, 167, 44, 0.35);
+  color: #A9A79F;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gl-modal-cancel-btn:hover {
+  border-color: #D4A72C;
+  color: #FFF7E6;
+}
+
+.gl-modal-submit-btn {
+  background: linear-gradient(135deg, #8C1821 0%, #A91F29 100%);
+  border: 1.5px solid #D4A72C;
+  color: #FFF7E6;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(140, 24, 33, 0.6);
+}
+
+.gl-modal-submit-btn:hover {
+  background: linear-gradient(135deg, #A91F29 0%, #C72B32 100%);
+  border-color: #F2D477;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(140, 24, 33, 0.8), 0 0 10px rgba(212, 167, 44, 0.4);
+}
+
+/* ======================================================
+   SIDEBAR TABS & CREW CARDS
+   ====================================================== */
+
+.gl-filter-tab {
+  flex: 1;
+  background: rgba(8, 22, 36, 0.6);
+  border: 1px solid rgba(212, 167, 44, 0.25);
+  border-radius: 6px;
+  color: #A9A79F;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 6px 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.gl-filter-tab:hover {
+  border-color: rgba(212, 167, 44, 0.5);
+  color: #FFF7E6;
+  background: rgba(12, 30, 48, 0.8);
+}
+
+.gl-filter-tab.active {
+  background: linear-gradient(135deg, rgba(140, 24, 33, 0.75) 0%, rgba(169, 31, 41, 0.75) 100%);
+  border-color: #D4A72C;
+  color: #FFF7E6;
+  box-shadow: 0 2px 8px rgba(140, 24, 33, 0.4);
+}
+
+.gl-crew-card {
+  border-color: rgba(212, 167, 44, 0.45);
+  background: rgba(10, 26, 44, 0.85);
+}
+
+.gl-crew-card:hover {
+  border-color: #F2D477;
+  background: rgba(16, 38, 62, 0.95);
+}
+
+/* ======================================================
+   FIND PIRATES BUTTON & FLEET DIRECTORY
+   ====================================================== */
+
+.gl-find-pirates-btn {
+  background: linear-gradient(135deg, rgba(14, 38, 64, 0.95) 0%, rgba(20, 52, 88, 0.95) 100%);
+  border: 1.5px solid #D4A72C;
+  color: #F2D477;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(6, 17, 31, 0.6);
+  width: 100%;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.gl-find-pirates-btn:hover {
+  background: linear-gradient(135deg, rgba(20, 52, 88, 1) 0%, rgba(30, 75, 125, 1) 100%);
+  border-color: #F2D477;
+  color: #FFF7E6;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8), 0 0 10px rgba(212, 167, 44, 0.35);
+  transform: translateY(-1px);
+}
+
+.gl-directory-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(8, 22, 36, 0.8);
+  border: 1.5px solid rgba(212, 167, 44, 0.25);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.gl-directory-card:hover {
+  border-color: rgba(212, 167, 44, 0.65);
+  background: rgba(12, 30, 52, 0.95);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.gl-badge-mutual {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(46, 204, 113, 0.16);
+  color: #2ECC71;
+  border: 1px solid rgba(46, 204, 113, 0.45);
+  white-space: nowrap;
+}
+
+.gl-badge-follower {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(52, 152, 219, 0.16);
+  color: #5DADE2;
+  border: 1px solid rgba(52, 152, 219, 0.45);
+  white-space: nowrap;
+}
+
+.gl-badge-following {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(243, 156, 18, 0.16);
+  color: #F39C12;
+  border: 1px solid rgba(243, 156, 18, 0.45);
+  white-space: nowrap;
+}
+
+.gl-badge-unmet {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(169, 167, 159, 0.12);
+  color: #C8C5BD;
+  border: 1px solid rgba(169, 167, 159, 0.3);
+  white-space: nowrap;
+}
+
+.gl-btn-follow {
+  background: linear-gradient(135deg, #8C1821 0%, #A91F29 100%);
+  border: 1.5px solid #D4A72C;
+  color: #FFF7E6;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.gl-btn-follow:hover {
+  background: linear-gradient(135deg, #A91F29 0%, #C72B32 100%);
+  border-color: #F2D477;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(140, 24, 33, 0.6);
+}
+
+.gl-btn-unfollow {
+  background: rgba(140, 24, 33, 0.25);
+  border: 1px solid rgba(199, 43, 50, 0.6);
+  color: #FF6B6B;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gl-btn-unfollow:hover {
+  background: rgba(199, 43, 50, 0.45);
+  border-color: #E74C3C;
+  color: #FFFFFF;
+}
+
+.gl-btn-chat {
+  background: linear-gradient(135deg, #16537E 0%, #0F3854 100%);
+  border: 1.5px solid #D4A72C;
+  color: #F2D477;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.gl-btn-chat:hover {
+  background: linear-gradient(135deg, #1E70A6 0%, #16537E 100%);
+  border-color: #F2D477;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+/* ======================================================
+   DEN DEN MUSHI CALL MODAL ANIMATIONS
+   ====================================================== */
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
