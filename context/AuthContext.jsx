@@ -23,7 +23,7 @@ export const AuthProvider = ({ children })=>{
             const { data } = await axios.get("/api/auth/check")
             if(data.success){
                 setAuthUser(data.user);
-                connectSocket(data.user);
+                connectSocket(data.user, token);
             }
         } catch (error) {
             toast.error(error.message)
@@ -36,10 +36,10 @@ export const AuthProvider = ({ children })=>{
             const { data } = await axios.post(`/api/auth/${state}`, credentials );
             if(data.success){
                 setAuthUser(data.userData);
-                connectSocket(data.userData);
                 axios.defaults.headers.common["token"] = data.token;
                 setToken(data.token);
-                localStorage.setItem("token",data.token)
+                localStorage.setItem("token",data.token);
+                connectSocket(data.userData, data.token);
                 toast.success(data.message)
             }else{
                 toast.error(data.message)
@@ -61,6 +61,7 @@ export const AuthProvider = ({ children })=>{
             }
             if (socket) {
                 socket.disconnect();
+                setSocket(null);
             }
             toast.success("Logged out successfully");
         } catch (error) {
@@ -86,20 +87,27 @@ export const AuthProvider = ({ children })=>{
         }
     }
 
-    // Connect socket function to handle socket connection and online users updates
-    const connectSocket =(userData)=>{
-        if(!userData || socket?.connected) return;
+    // Connect socket function to handle socket connection with JWT auth
+    const connectSocket = (userData, customToken) => {
+        const authToken = customToken || token || localStorage.getItem("token");
+        if (!userData || !authToken) return;
+        if (socket?.connected) return;
+
         const newSocket = io(backendUrl, {
-            query: {
-                userId: userData._id,
+            auth: {
+                token: authToken,
             }
         });
         newSocket.connect();
         setSocket(newSocket);
 
-        newSocket.on("getOnlineUsers",(userIds)=>{
+        newSocket.on("getOnlineUsers", (userIds) => {
             setOnlineUsers(userIds);
-        })
+        });
+
+        newSocket.on("connect_error", (err) => {
+            console.error("Socket authentication/connection error:", err.message);
+        });
     }
     useEffect(()=>{
         if(token){

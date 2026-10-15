@@ -4,6 +4,7 @@ import assets from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { ChatContext } from '../../context/ChatContext';
+import { formatPresence, formatChatTime, formatMessagePreview } from '../lib/utils';
 import toast from 'react-hot-toast';
 
 /* ── Straw Hat Jolly Roger SVG Emblem ── */
@@ -100,7 +101,7 @@ const Sidebar = () => {
   const {
     getUsers, users, allUsers, getAllUsers, toggleFollowUser,
     crews, createCrew, selectedUser, setSelectedUser,
-    unseenMessages, setUnseenMessages,
+    unseenMessages, setUnseenMessages, lastMessages, typingUsers,
   } = useContext(ChatContext);
 
   const { logout, onlineUsers, authUser, axios } = useContext(AuthContext);
@@ -150,13 +151,25 @@ const Sidebar = () => {
     }
   };
 
-  const filteredUsers = input
-    ? users.filter(u => u.fullName.toLowerCase().includes(input.toLowerCase()))
-    : users;
+  const sortedUsers = [...users].sort((a, b) => {
+    const timeA = new Date(lastMessages[a._id]?.createdAt || a.updatedAt || 0).getTime();
+    const timeB = new Date(lastMessages[b._id]?.createdAt || b.updatedAt || 0).getTime();
+    return timeB - timeA;
+  });
 
-  const filteredCrews = (crews || []).filter(c =>
-    input ? c.fullName.toLowerCase().includes(input.toLowerCase()) : true
-  );
+  const filteredUsers = input
+    ? sortedUsers.filter(u => u.fullName.toLowerCase().includes(input.toLowerCase()))
+    : sortedUsers;
+
+  const sortedCrews = [...(crews || [])].sort((a, b) => {
+    const timeA = new Date(lastMessages[a._id]?.createdAt || a.updatedAt || a.createdAt || 0).getTime();
+    const timeB = new Date(lastMessages[b._id]?.createdAt || b.updatedAt || b.createdAt || 0).getTime();
+    return timeB - timeA;
+  });
+
+  const filteredCrews = input
+    ? sortedCrews.filter(c => c.fullName.toLowerCase().includes(input.toLowerCase()))
+    : sortedCrews;
 
   useEffect(() => {
     getUsers();
@@ -464,6 +477,16 @@ const Sidebar = () => {
               filteredCrews.map((crew) => {
                 const isSelected = selectedUser?._id === crew._id;
                 const isCaptainOfCrew = crew.captain?._id === authUser?._id;
+                const lastMsg = lastMessages[crew._id];
+                const unseen = unseenMessages[crew._id];
+                const timeText = lastMsg?.createdAt ? formatChatTime(lastMsg.createdAt) : null;
+                const crewTyping = typingUsers[crew._id];
+                const isCrewTyping = Boolean(crewTyping && crewTyping.length > 0);
+                const previewText = isCrewTyping
+                  ? "typing..."
+                  : (lastMsg
+                      ? formatMessagePreview(lastMsg, authUser?._id, true)
+                      : `👑 Captain: ${isCaptainOfCrew ? 'You' : (crew.captain?.fullName || 'Captain')} • ${crew.members?.length || 0} Pirates`);
 
                 return (
                   <div
@@ -503,19 +526,10 @@ const Sidebar = () => {
                         }}>
                           {crew.fullName}
                         </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          {unseenMessages[crew._id] > 0 && (
-                            <span style={{
-                              fontSize: '0.66rem',
-                              background: '#8C1821',
-                              color: '#FFF7E6',
-                              border: '1px solid #D4A72C',
-                              borderRadius: '10px',
-                              padding: '1px 6px',
-                              fontWeight: 700,
-                              boxShadow: '0 0 6px rgba(230,57,70,0.5)',
-                            }}>
-                              {unseenMessages[crew._id]}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                          {timeText && (
+                            <span style={{ fontSize: '0.68rem', color: '#8E9EAB', fontWeight: 500 }}>
+                              {timeText}
                             </span>
                           )}
                           <span style={{
@@ -533,13 +547,26 @@ const Sidebar = () => {
                           </span>
                         </div>
                       </div>
-                      <p style={{
-                        margin: '2px 0 0', fontSize: '0.72rem',
-                        color: isSelected ? '#D6BD86' : '#C9AA72',
-                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                      }}>
-                        👑 Captain: {isCaptainOfCrew ? 'You' : (crew.captain?.fullName || 'Captain')} • {crew.members?.length || 0} Pirates
-                      </p>
+
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginTop: '3px' }}>
+                        <p style={{
+                          margin: 0, fontSize: '0.74rem',
+                          color: isCrewTyping
+                            ? 'var(--online)'
+                            : (lastMsg ? '#D6BD86' : (isSelected ? '#D6BD86' : '#C9AA72')),
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                          fontStyle: (isCrewTyping || !lastMsg) ? 'italic' : 'normal',
+                          fontWeight: isCrewTyping ? 600 : 400,
+                          flex: 1, minWidth: 0,
+                        }}>
+                          {previewText}
+                        </p>
+                        {unseen > 0 && (
+                          <div className="unseen-badge" style={{ marginLeft: '4px' }}>
+                            {unseen > 99 ? '99+' : unseen}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -578,6 +605,15 @@ const Sidebar = () => {
                 const isSelected = selectedUser?._id === user._id;
                 const isOnline = onlineUsers.includes(user._id);
                 const unseen = unseenMessages[user._id];
+                const lastMsg = lastMessages[user._id];
+                const timeText = lastMsg?.createdAt ? formatChatTime(lastMsg.createdAt) : null;
+                const userTyping = typingUsers[user._id];
+                const isUserTyping = Boolean(userTyping && userTyping.length > 0);
+                const previewText = isUserTyping
+                  ? "typing..."
+                  : (lastMsg
+                      ? formatMessagePreview(lastMsg, authUser?._id, false)
+                      : formatPresence(isOnline, user.lastSeen));
 
                 return (
                   <div
@@ -616,29 +652,48 @@ const Sidebar = () => {
                       )}
                     </div>
 
-                    {/* Info: Name & Status */}
+                    {/* Info: Name & Status / Preview */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{
-                        margin: 0, fontSize: '0.92rem', fontWeight: 700,
-                        color: isSelected ? '#FFFFFF' : '#FFFFFF',
-                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                        fontFamily: 'Outfit, sans-serif',
-                      }}>
-                        {user.fullName}
-                      </p>
-                      <p style={{
-                        margin: '2px 0 0', fontSize: '0.74rem',
-                        color: isSelected ? '#D6BD86' : (isOnline ? 'var(--online)' : 'var(--text-muted)'),
-                        fontStyle: 'italic',
-                      }}>
-                        {isOnline ? '● Online' : 'Offline'}
-                      </p>
-                    </div>
+                      {/* Top Row: Name + Time */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                        <p style={{
+                          margin: 0, fontSize: '0.92rem', fontWeight: 700,
+                          color: '#FFFFFF',
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                          fontFamily: 'Outfit, sans-serif',
+                        }}>
+                          {user.fullName}
+                        </p>
+                        {timeText && (
+                          <span style={{ fontSize: '0.68rem', color: '#8E9EAB', fontWeight: 500, flexShrink: 0 }}>
+                            {timeText}
+                          </span>
+                        )}
+                      </div>
 
-                    {/* Unseen badge */}
-                    {unseen > 0 && (
-                      <div className="unseen-badge">{unseen}</div>
-                    )}
+                      {/* Bottom Row: Preview / Presence + Unread Badge */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginTop: '3px' }}>
+                        <p style={{
+                          margin: 0, fontSize: '0.74rem',
+                          color: isUserTyping
+                            ? 'var(--online)'
+                            : (lastMsg
+                                ? '#D6BD86'
+                                : (isSelected ? '#D6BD86' : (isOnline ? 'var(--online)' : 'var(--text-muted)'))),
+                          fontStyle: (isUserTyping || !lastMsg) ? 'italic' : 'normal',
+                          fontWeight: isUserTyping ? 600 : 400,
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                          flex: 1, minWidth: 0,
+                        }}>
+                          {previewText}
+                        </p>
+                        {unseen > 0 && (
+                          <div className="unseen-badge" style={{ marginLeft: '4px' }}>
+                            {unseen > 99 ? '99+' : unseen}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 );
               })
@@ -848,8 +903,8 @@ const Sidebar = () => {
                             <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: 700, color: '#FFFFFF' }}>
                               {u.fullName}
                             </p>
-                            <span style={{ fontSize: '0.7rem', color: isOnline ? 'var(--online)' : 'var(--text-muted)' }}>
-                              {isOnline ? '● Online' : 'Offline'}
+                            <span style={{ fontSize: '0.7rem', color: isOnline ? 'var(--online)' : 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {formatPresence(isOnline, u.lastSeen)}
                             </span>
                           </div>
                           <span style={{

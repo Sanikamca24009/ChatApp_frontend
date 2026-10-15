@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import assets from '../assets/assets';
+import { formatPresence } from '../lib/utils';
 import { ChatContext, PRESET_THEMES } from '../../context/ChatContext';
 import { AuthContext } from '../../context/AuthContext';
 import { CallContext } from '../../context/CallContext';
@@ -182,7 +183,7 @@ const RightSidebar = ({ onClose }) => {
         }}>
           {selectedUser.isGroup
             ? `Pirate Fleet • ${selectedUser.members?.length || 0} Members`
-            : (isOnline ? '● Online' : 'Last seen recently')}
+            : formatPresence(isOnline, selectedUser.lastSeen)}
         </p>
 
         {/* Captain banner / Bio */}

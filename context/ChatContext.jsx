@@ -1,4 +1,4 @@
-import { createContext, useContext, useDebugValue, useEffect, useState } from "react";
+import { createContext, useContext, useDebugValue, useEffect, useRef, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
 
@@ -38,6 +38,7 @@ export const ChatProvider = ({ children })=>{
     const [crews, setCrews] = useState([]);
     const [selectedUser, setSelectedUser ] = useState(null);
     const [unseenMessages, setUnseenMessages ] = useState({});
+    const [lastMessages, setLastMessages] = useState({});
 
     // Per-chat custom themes (stored in localStorage)
     const [chatThemes, setChatThemes] = useState(() => {
@@ -68,12 +69,85 @@ export const ChatProvider = ({ children })=>{
 
     const { axios, socket, authUser } = useContext(AuthContext);
 
+    // Typing state: maps chatId (user ID or crew ID) to array of { id: senderId, name: senderName }
+    const [typingUsers, setTypingUsers] = useState({});
+    const lastTypingEmitRef = useRef(0);
+    const typingTimeoutRef = useRef(null);
+    const currentTypingTargetRef = useRef(null);
+    const safetyTimersRef = useRef({});
+
+    const stopTyping = () => {
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = null;
+        }
+        if (currentTypingTargetRef.current && socket?.connected) {
+            socket.emit("typing:stop", currentTypingTargetRef.current);
+            currentTypingTargetRef.current = null;
+            lastTypingEmitRef.current = 0;
+        }
+    };
+
+    const sendTyping = () => {
+        if (!socket?.connected || !selectedUser) return;
+
+        const target = selectedUser.isGroup
+            ? { crewId: selectedUser._id }
+            : { recipientId: selectedUser._id };
+
+        const now = Date.now();
+        // Throttle typing:start to at most once every 2 seconds
+        if (now - lastTypingEmitRef.current >= 2000) {
+            socket.emit("typing:start", target);
+            lastTypingEmitRef.current = now;
+            currentTypingTargetRef.current = target;
+        }
+
+        // Reset 2-second inactivity timer
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+        typingTimeoutRef.current = setTimeout(() => {
+            stopTyping();
+        }, 2000);
+    };
+
+    // Emit typing:stop on chat switch
+    useEffect(() => {
+        stopTyping();
+    }, [selectedUser?._id]);
+
+    // Emit typing:stop on disconnect or tab close
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            stopTyping();
+        };
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        if (socket) {
+            socket.on("disconnect", stopTyping);
+        }
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+            if (socket) {
+                socket.off("disconnect", stopTyping);
+            }
+        };
+    }, [socket]);
+
     // function to get all crews for logged in user
     const getCrews = async () => {
         try {
             const { data } = await axios.get("/api/crews");
             if (data.success) {
                 setCrews(data.crews);
+                if (data.unseenMessages) {
+                    setUnseenMessages(prev => ({ ...prev, ...data.unseenMessages }));
+                }
+                if (data.lastMessages) {
+                    setLastMessages(prev => ({ ...prev, ...data.lastMessages }));
+                }
             }
         } catch (error) {
             console.error("Failed to load crews from backend", error);
@@ -111,6 +185,10 @@ export const ChatProvider = ({ children })=>{
                 }
                 if (data.inauguralMsg) {
                     setMessages([data.inauguralMsg]);
+                    setLastMessages(prev => ({
+                        ...prev,
+                        [newCrew._id]: data.inauguralMsg
+                    }));
                 } else {
                     await getMessages(newCrew._id);
                 }
@@ -131,8 +209,11 @@ export const ChatProvider = ({ children })=>{
         try {
             const { data } = await axios.get("/api/messages/users");
             if(data.success){
-                setUsers(data.users)
-                setUnseenMessages(data.unseenMessages)
+                setUsers(data.users);
+                setUnseenMessages(prev => ({ ...prev, ...(data.unseenMessages || {}) }));
+                if (data.lastMessages) {
+                    setLastMessages(prev => ({ ...prev, ...data.lastMessages }));
+                }
             }
         } catch (error) {
             toast.error(error.message)
@@ -205,6 +286,7 @@ export const ChatProvider = ({ children })=>{
 
     // function to send message to selected user or crew
     const sendMessage = async (messageData) => {
+        stopTyping();
         try {
             if (selectedUser?.isGroup) {
                 const { data } = await axios.post(`/api/crews/${selectedUser._id}/messages`, messageData);
@@ -213,6 +295,14 @@ export const ChatProvider = ({ children })=>{
                         if (prev.some(m => m._id === data.newMessage._id)) return prev;
                         return [...prev, data.newMessage];
                     });
+                    setLastMessages(prev => ({
+                        ...prev,
+                        [selectedUser._id]: {
+                            ...data.newMessage,
+                            senderId: authUser?._id,
+                            senderName: authUser?.fullName || "You"
+                        }
+                    }));
                 } else {
                     toast.error(data.message || "Failed to send crew message");
                 }
@@ -222,7 +312,14 @@ export const ChatProvider = ({ children })=>{
             const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData);
 
             if(data.success){
-                setMessages((prevMessages)=>[...prevMessages, data.newMessage])
+                setMessages((prevMessages)=>[...prevMessages, data.newMessage]);
+                setLastMessages(prev => ({
+                    ...prev,
+                    [selectedUser._id]: {
+                        ...data.newMessage,
+                        senderId: authUser?._id,
+                    }
+                }));
             }else{
                 toast.error(data.message)
             }
@@ -236,20 +333,108 @@ export const ChatProvider = ({ children })=>{
         if(!socket) return;
 
         socket.on("newMessage",(newMessage)=>{
+            setLastMessages(prev => ({
+                ...prev,
+                [newMessage.senderId]: newMessage
+            }));
+
+            // Clear typing state and safety timer for sender
+            const directTimerKey = `${newMessage.senderId}_${newMessage.senderId}`;
+            if (safetyTimersRef.current[directTimerKey]) {
+                clearTimeout(safetyTimersRef.current[directTimerKey]);
+                delete safetyTimersRef.current[directTimerKey];
+            }
+            setTypingUsers(prev => {
+                const current = prev[newMessage.senderId] || [];
+                const nextList = current.filter(u => u.id !== newMessage.senderId);
+                if (nextList.length === 0) {
+                    const copy = { ...prev };
+                    delete copy[newMessage.senderId];
+                    return copy;
+                }
+                return { ...prev, [newMessage.senderId]: nextList };
+            });
+
             if(selectedUser && !selectedUser.isGroup && newMessage.senderId === selectedUser._id){
+                newMessage.status = "seen";
                 newMessage.seen = true;
                 setMessages((prevMessages)=> [...prevMessages, newMessage]);
                 axios.put(`/api/messages/mark/${newMessage._id}`);
+                socket.emit("ackSeen", { messageId: newMessage._id, senderId: newMessage.senderId });
             }else{
+                // Acknowledge delivery so sender receives real-time delivered double-check
+                socket.emit("ackDelivered", { messageId: newMessage._id, senderId: newMessage.senderId });
                 setUnseenMessages((prevUnseenMessages)=>({
-                    ...prevUnseenMessages, [ newMessage.senderId ] :
-                    prevUnseenMessages[newMessage.senderId] ? prevUnseenMessages
-                    [newMessage.sender] + 1 : 1
+                    ...prevUnseenMessages,
+                    [ newMessage.senderId ]: (prevUnseenMessages[newMessage.senderId] || 0) + 1
                 }))
             }
         });
 
+        socket.on("messageDelivered", ({ messageId, status }) => {
+            setMessages((prev) => prev.map(m => m._id === messageId ? { ...m, status: 'delivered' } : m));
+        });
+
+        socket.on("messagesDelivered", ({ messageIds }) => {
+            if (Array.isArray(messageIds)) {
+                setMessages((prev) => prev.map(m => messageIds.includes(m._id) ? { ...m, status: 'delivered' } : m));
+            }
+        });
+
+        socket.on("messageSeen", ({ messageId }) => {
+            setMessages((prev) => prev.map(m => m._id === messageId ? { ...m, status: 'seen', seen: true } : m));
+        });
+
+        socket.on("messagesSeen", ({ byUserId }) => {
+            if (selectedUser && !selectedUser.isGroup && selectedUser._id === byUserId) {
+                setMessages((prev) => prev.map(m => m.receiverId === byUserId ? { ...m, status: 'seen', seen: true } : m));
+            }
+        });
+
+        socket.on("crewMessagesSeen", ({ crewId, userId }) => {
+            if (selectedUser && selectedUser.isGroup && selectedUser._id === crewId) {
+                setMessages((prev) => prev.map(m => {
+                    const seenByList = m.seenBy || [];
+                    if (!seenByList.includes(userId)) {
+                        return { ...m, seenBy: [...seenByList, userId], seen: true };
+                    }
+                    return m;
+                }));
+            }
+        });
+
+        socket.on("userLastSeen", ({ userId, lastSeen }) => {
+            setUsers(prev => prev.map(u => u._id === userId ? { ...u, lastSeen } : u));
+            setAllUsers(prev => prev.map(u => u._id === userId ? { ...u, lastSeen } : u));
+            setSelectedUser(prev => prev && prev._id === userId ? { ...prev, lastSeen } : prev);
+        });
+
         socket.on("newCrewMessage", (newMsg) => {
+            setLastMessages(prev => ({
+                ...prev,
+                [newMsg.crewId]: newMsg
+            }));
+
+            // Clear typing state and safety timer for sender in crew
+            const senderUserId = (newMsg.sender?._id || newMsg.senderId)?.toString();
+            if (senderUserId) {
+                const crewTimerKey = `${newMsg.crewId}_${senderUserId}`;
+                if (safetyTimersRef.current[crewTimerKey]) {
+                    clearTimeout(safetyTimersRef.current[crewTimerKey]);
+                    delete safetyTimersRef.current[crewTimerKey];
+                }
+                setTypingUsers(prev => {
+                    const current = prev[newMsg.crewId] || [];
+                    const nextList = current.filter(u => u.id !== senderUserId);
+                    if (nextList.length === 0) {
+                        const copy = { ...prev };
+                        delete copy[newMsg.crewId];
+                        return copy;
+                    }
+                    return { ...prev, [newMsg.crewId]: nextList };
+                });
+            }
+
             if (selectedUser && selectedUser.isGroup && selectedUser._id === newMsg.crewId) {
                 setMessages((prevMessages) => {
                     if (prevMessages.some(m => m._id === newMsg._id)) return prevMessages;
@@ -273,6 +458,139 @@ export const ChatProvider = ({ children })=>{
             }
             toast.success(`Recruited to Crew "${newCrew.fullName}"!`, { icon: newCrew.flag || '🏴‍☠️' });
         });
+
+        // ── Real-time Typing Handlers ──
+        socket.on("userTyping:start", ({ senderId, senderName, crewId }) => {
+            if (!senderId) return;
+            const chatId = crewId || senderId;
+            const timerKey = `${chatId}_${senderId}`;
+
+            // Reset 5-second safety timeout on receiver side
+            if (safetyTimersRef.current[timerKey]) {
+                clearTimeout(safetyTimersRef.current[timerKey]);
+            }
+            safetyTimersRef.current[timerKey] = setTimeout(() => {
+                setTypingUsers(prev => {
+                    const current = prev[chatId] || [];
+                    const nextList = current.filter(u => u.id !== senderId);
+                    if (nextList.length === 0) {
+                        const copy = { ...prev };
+                        delete copy[chatId];
+                        return copy;
+                    }
+                    return { ...prev, [chatId]: nextList };
+                });
+                delete safetyTimersRef.current[timerKey];
+            }, 5000);
+
+            setTypingUsers(prev => {
+                const current = prev[chatId] || [];
+                if (current.some(u => u.id === senderId)) {
+                    return prev;
+                }
+                return {
+                    ...prev,
+                    [chatId]: [...current, { id: senderId, name: senderName }]
+                };
+            });
+        });
+
+        socket.on("userTyping:stop", ({ senderId, crewId }) => {
+            if (!senderId) return;
+            const chatId = crewId || senderId;
+            const timerKey = `${chatId}_${senderId}`;
+
+            if (safetyTimersRef.current[timerKey]) {
+                clearTimeout(safetyTimersRef.current[timerKey]);
+                delete safetyTimersRef.current[timerKey];
+            }
+
+            setTypingUsers(prev => {
+                const current = prev[chatId] || [];
+                const nextList = current.filter(u => u.id !== senderId);
+                if (nextList.length === 0) {
+                    const copy = { ...prev };
+                    delete copy[chatId];
+                    return copy;
+                }
+                return { ...prev, [chatId]: nextList };
+            });
+        });
+
+        socket.on("messageEdited", ({ messageId, text, editedAt }) => {
+            setMessages((prev) => prev.map(m => {
+                let updated = m;
+                if (m._id === messageId) {
+                    updated = { ...m, text, editedAt };
+                }
+                if (m.replyTo && (m.replyTo._id === messageId || m.replyTo === messageId)) {
+                    updated = {
+                        ...updated,
+                        replyTo: typeof m.replyTo === 'object'
+                            ? { ...m.replyTo, text }
+                            : m.replyTo
+                    };
+                }
+                return updated;
+            }));
+
+            setLastMessages((prev) => {
+                const next = { ...prev };
+                for (const key of Object.keys(next)) {
+                    if (next[key]?._id === messageId) {
+                        next[key] = { ...next[key], text, editedAt };
+                    }
+                }
+                return next;
+            });
+        });
+
+        socket.on("messageDeleted", ({ messageId, deleteType, crewId, senderId, receiverId, wasUnseen }) => {
+            const chatId = crewId || (senderId === authUser?._id ? receiverId : senderId);
+
+            if (deleteType === "for_me") {
+                setMessages((prev) => prev.filter(m => m._id !== messageId));
+            } else {
+                setMessages((prev) => prev.map(m => {
+                    let updated = m;
+                    if (m._id === messageId) {
+                        updated = { ...m, text: "This message was lost at sea", image: null, isDeletedForAll: true };
+                    }
+                    if (m.replyTo && (m.replyTo._id === messageId || m.replyTo === messageId)) {
+                        updated = {
+                            ...updated,
+                            replyTo: typeof m.replyTo === 'object'
+                                ? { ...m.replyTo, text: "This message was lost at sea", image: null, isDeletedForAll: true }
+                                : m.replyTo
+                        };
+                    }
+                    return updated;
+                }));
+
+                // Drop unread badge immediately in real time if unread
+                if (chatId && wasUnseen && senderId !== authUser?._id) {
+                    setUnseenMessages(prev => {
+                        const current = prev[chatId] || 0;
+                        return {
+                            ...prev,
+                            [chatId]: Math.max(0, current - 1)
+                        };
+                    });
+                }
+            }
+            // Refresh sidebar to update previous visible message and unread count
+            getUsers();
+            getCrews();
+        });
+
+        socket.on("messageReaction", ({ messageId, reactions }) => {
+            setMessages((prev) => prev.map(m => {
+                if (m._id === messageId) {
+                    return { ...m, reactions };
+                }
+                return m;
+            }));
+        });
     }
 
     // Function to unsubscribe from messages
@@ -281,7 +599,21 @@ export const ChatProvider = ({ children })=>{
             socket.off("newMessage");
             socket.off("newCrewMessage");
             socket.off("newCrew");
+            socket.off("messageDelivered");
+            socket.off("messagesDelivered");
+            socket.off("messageSeen");
+            socket.off("messagesSeen");
+            socket.off("crewMessagesSeen");
+            socket.off("userLastSeen");
+            socket.off("userTyping:start");
+            socket.off("userTyping:stop");
+            socket.off("messageEdited");
+            socket.off("messageDeleted");
+            socket.off("messageReaction");
         }
+        // Clear all active safety timers
+        Object.values(safetyTimersRef.current).forEach(t => clearTimeout(t));
+        safetyTimersRef.current = {};
     }
 
     // Join all user crew rooms upon socket connection or crews change
@@ -306,10 +638,12 @@ export const ChatProvider = ({ children })=>{
     },[socket, selectedUser])
 
     const value = {
-        messages, users, allUsers, getAllUsers, toggleFollowUser,
+        messages, setMessages, users, allUsers, getAllUsers, toggleFollowUser,
         crews, setCrews, getCrews, createCrew, selectedUser, getUsers, getMessages,
         sendMessage, setSelectedUser, unseenMessages, setUnseenMessages,
-        chatThemes, setChatTheme, PRESET_THEMES
+        lastMessages, setLastMessages,
+        chatThemes, setChatTheme, PRESET_THEMES,
+        typingUsers, sendTyping, stopTyping
     }
     return(
         <ChatContext.Provider value={value}>
